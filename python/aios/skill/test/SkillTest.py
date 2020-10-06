@@ -10,6 +10,7 @@ class SkillTest(unittest.TestCase):
 
         # TODO:
         # parse skill.yml
+        # parse contract
         # validate skill.yml
         # return SkillRef
 
