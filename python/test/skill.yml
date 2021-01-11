@@ -1,0 +1,41 @@
+# skill identifier
+owner: "leftshiftone"
+name: "echo-test"
+
+# version control
+scm: "https://bitbucket.org/leftshiftone/skill-echo-demo/src/master/"
+
+# skill license
+license:
+  name: "Apache 2.0"
+  url: "https://apache.org/licenses/LICENSE-2.0.html"
+visibility: "public"
+
+# additional properties
+labels: ["ai", "nlp", "text", "ner"]
+authors: ["christian.weber@leftshift.one"]
+
+# the image with a python runtime
+image: "007098893018.dkr.ecr.eu-central-1.amazonaws.com/skill-runtime-python-3.7:1.0.0"
+
+resources:
+  cpu:
+    min: 100
+  memory:
+    min: 128
+properties:
+  - name: "ACTIVATE_SCORES"
+    desc: "Defines whether scores are calculated"
+    default: "DEACTIVATE"
+    pattern: "(ACTIVATE|DEACTIVATE)"
+# TODO: define schema
+contract: ["./echo"]
+composable: true
+network_access: false # no internet access necessary
+
+# TODO: define permissions
+permissions: ["dataApi/read"]
+# the main class to execute
+handler:
+  file: "handler"
+  function: "evaluate"

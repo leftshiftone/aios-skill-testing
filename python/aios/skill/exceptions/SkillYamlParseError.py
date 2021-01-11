@@ -1,0 +1,2 @@
+class SkillYamlParseError(Exception):
+    pass
