@@ -53,18 +53,7 @@ class SkillTest(unittest.TestCase):
             SkillTest.validate_skill_license(skill_config, skill_config_path)
             SkillTest.validate_additional_properties(skill_config, skill_config_path)
             SkillTest.validate_image(skill_config, skill_config_path)
-
-            properties = "properties"
-            if properties not in skill_config.keys():
-                raise SkillYamlMissingKeyError(properties, skill_config_path)
-            if skill_config[properties] and len(skill_config[properties]) > 0:
-                for property in skill_config[properties]:
-                    if not property:
-                        raise SkillYamlInvalidValueError(properties + ": " + property, skill_config_path)
-                    for key in property.keys():
-                        if key not in ['name', 'desc', 'default', 'pattern']:
-                            raise SkillYamlInvalidValueError(properties + ": " + property + ": " + key, skill_config_path)
-
+            SkillTest.validate_properties(skill_config, skill_config_path)
             SkillTest.validate_contract(skill_config, skill_config_path)
             SkillTest.validate_composable(skill_config, skill_config_path)
             SkillTest.validate_network_access(skill_config, skill_config_path)
@@ -79,20 +68,31 @@ class SkillTest(unittest.TestCase):
         return evaluate_function, module_name, contract
 
     @staticmethod
+    def validate_properties(skill_config, skill_config_path):
+        properties = "properties"
+        if properties not in skill_config.keys():
+            raise SkillYamlMissingKeyError(properties, skill_config_path)
+        if skill_config[properties] and len(skill_config[properties]) > 0:
+            for property in skill_config[properties]:
+                if not property:
+                    raise SkillYamlInvalidValueError(properties + ": " + property, skill_config_path)
+                for key in property.keys():
+                    if key not in ['name', 'desc', 'default', 'pattern']:
+                        raise SkillYamlInvalidValueError(properties + ": " + property + ": " + key, skill_config_path)
+
+    @staticmethod
     def validate_composable(skill_config, skill_config_path):
         composable = 'composable'
-        if composable not in skill_config.keys():
-            raise SkillYamlMissingKeyError(composable, skill_config_path)
-        if not str(skill_config[composable]) or str(skill_config[composable]).lower() not in ['true', 'false']:
-            raise SkillYamlInvalidValueError(composable, skill_config_path)
+        if composable in skill_config.keys():
+            if not str(skill_config[composable]) or str(skill_config[composable]).lower() not in ['true', 'false']:
+                raise SkillYamlInvalidValueError(composable, skill_config_path)
 
     @staticmethod
     def validate_network_access(skill_config, skill_config_path):
         network_access = 'network_access'
-        if network_access not in skill_config.keys():
-            raise SkillYamlMissingKeyError(network_access, skill_config_path)
-        if not str(skill_config[network_access]) or str(skill_config[network_access]).lower() not in ['true', 'false']:
-            raise SkillYamlInvalidValueError(network_access, skill_config_path)
+        if network_access in skill_config.keys():
+            if not str(skill_config[network_access]) or str(skill_config[network_access]).lower() not in ['true', 'false']:
+                raise SkillYamlInvalidValueError(network_access, skill_config_path)
 
     @staticmethod
     def validate_contract(skill_config, skill_config_path):
@@ -141,13 +141,12 @@ class SkillTest(unittest.TestCase):
     @staticmethod
     def validate_permissions(skill_config, skill_config_path):
         permissions = 'permissions'
-        if permissions not in skill_config.keys():
-            raise SkillYamlMissingKeyError(permissions, skill_config_path)
-        if skill_config[permissions] is None or len(skill_config[permissions]) < 1:
-            raise SkillYamlInvalidValueError(permissions, skill_config_path)
-        for permission in skill_config[permissions]:
-            if not permission:
+        if permissions in skill_config.keys():
+            if skill_config[permissions] is None or len(skill_config[permissions]) < 1:
                 raise SkillYamlInvalidValueError(permissions, skill_config_path)
+            for permission in skill_config[permissions]:
+                if not permission:
+                    raise SkillYamlInvalidValueError(permissions, skill_config_path)
 
     @staticmethod
     def get_skill_config_path(skill_config_path):
@@ -188,11 +187,10 @@ class SkillTest(unittest.TestCase):
     @staticmethod
     def validate_image(skill_config, skill_config_path):
         image = 'image'
-        if image not in skill_config.keys():
-            raise SkillYamlMissingKeyError(image, skill_config_path)
-        valid_image_pattern = r".+skill-runtime-python-[2,3]\.\d:\d\.\d\.\d"
-        if skill_config[image] is None or not re.search(valid_image_pattern, skill_config[image]):
-            raise SkillYamlInvalidValueError(image, skill_config_path)
+        if image in skill_config.keys():
+            valid_image_pattern = r".+skill-runtime-python-[2,3]\.\d:\d\.\d\.\d"
+            if skill_config[image] is None or not re.search(valid_image_pattern, skill_config[image]):
+                raise SkillYamlInvalidValueError(image, skill_config_path)
 
     @staticmethod
     def validate_additional_properties(skill_config, skill_config_path):
@@ -202,63 +200,58 @@ class SkillTest(unittest.TestCase):
     @staticmethod
     def validate_labels(skill_config, skill_config_path):
         labels = 'labels'
-        if labels not in skill_config.keys():
-            raise SkillYamlMissingKeyError(labels, skill_config_path)
-        if skill_config[labels] is None or len(skill_config[labels]) < 1:
-            raise SkillYamlInvalidValueError(labels, skill_config_path)
-        for label in skill_config[labels]:
-            if not label:
+        if labels in skill_config.keys():
+            if skill_config[labels] is None or len(skill_config[labels]) < 1:
                 raise SkillYamlInvalidValueError(labels, skill_config_path)
+            for label in skill_config[labels]:
+                if not label:
+                    raise SkillYamlInvalidValueError(labels, skill_config_path)
 
     @staticmethod
     def validate_authors(skill_config, skill_config_path):
         authors = 'authors'
-        if authors not in skill_config.keys():
-            raise SkillYamlMissingKeyError(authors, skill_config_path)
-        valid_email_pattern = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
-        if skill_config[authors] is None or len(skill_config[authors]) < 1:
-            raise SkillYamlInvalidValueError(authors, skill_config_path)
-        for author in skill_config[authors]:
-            if not re.search(valid_email_pattern, author):
+        if authors in skill_config.keys():
+            valid_email_pattern = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
+            if skill_config[authors] is None or len(skill_config[authors]) < 1:
                 raise SkillYamlInvalidValueError(authors, skill_config_path)
+            for author in skill_config[authors]:
+                if not re.search(valid_email_pattern, author):
+                    raise SkillYamlInvalidValueError(authors, skill_config_path)
 
     @staticmethod
     def validate_skill_license(skill_config, skill_config_path):
-        skill_license = SkillTest.validate_license(skill_config, skill_config_path)
-        SkillTest.validate_license_name(skill_license, skill_config, skill_config_path)
-        SkillTest.validate_license_url(skill_license, skill_config, skill_config_path)
-        SkillTest.validate_license_visibility(skill_config, skill_config_path)
-
-    @staticmethod
-    def validate_license_visibility(skill_config, skill_config_path):
-        visibility = 'visibility'
-        if visibility not in skill_config.keys():
-            raise SkillYamlMissingKeyError(visibility, skill_config_path)
-        if not skill_config[visibility]:
-            raise SkillYamlInvalidValueError(visibility, skill_config_path)
+        skill_license = 'license'
+        if skill_license in skill_config.keys():
+            SkillTest.validate_license_name('license', skill_config, skill_config_path)
+            SkillTest.validate_license_url('license', skill_config, skill_config_path)
+            SkillTest.validate_license_visibility(skill_config, skill_config_path)
 
     @staticmethod
     def validate_license(skill_config, skill_config_path):
         skill_license = 'license'
         if skill_license not in skill_config.keys():
             raise SkillYamlMissingKeyError(skill_license, skill_config_path)
-        return skill_license
+
+    @staticmethod
+    def validate_license_visibility(skill_config, skill_config_path):
+        visibility = 'visibility'
+        if visibility in skill_config.keys():
+            if not skill_config[visibility]:
+                raise SkillYamlInvalidValueError(visibility, skill_config_path)
 
     @staticmethod
     def validate_license_url(skill_license, skill_config, skill_config_path):
         url = 'url'
-        if url not in skill_config[skill_license].keys():
-            raise SkillYamlMissingKeyError(skill_license + ': ' + url, skill_config_path)
-        if not skill_config[skill_license][url] or not validators.url(skill_config[skill_license][url]):
-            raise SkillYamlInvalidValueError(skill_license + ': ' + url, skill_config_path)
+        if url in skill_config[skill_license].keys():
+            if not skill_config[skill_license][url] or not validators.url(skill_config[skill_license][url]):
+                raise SkillYamlInvalidValueError(skill_license + ': ' + url, skill_config_path)
 
     @staticmethod
     def validate_license_name(skill_license, skill_config, skill_config_path):
         name = 'name'
-        if name not in skill_config[skill_license].keys():
-            raise SkillYamlMissingKeyError(skill_license + ': ' + name, skill_config_path)
-        if not skill_config[skill_license][name]:
-            raise SkillYamlInvalidValueError(skill_license + ': ' + name, skill_config_path)
+        if name in skill_config[skill_license].keys():
+            if not skill_config[skill_license][name]:
+                raise SkillYamlInvalidValueError(skill_license + ': ' + name, skill_config_path)
 
     @staticmethod
     def validate_skill_identifier(skill_config, skill_config_path):
@@ -268,11 +261,9 @@ class SkillTest(unittest.TestCase):
     @staticmethod
     def validate_version_control(skill_config, skill_config_path):
         scm = 'scm'
-        if scm not in skill_config.keys():
-            raise SkillYamlMissingKeyError(scm, skill_config_path)
-
-        if not skill_config[scm] or not validators.url(skill_config[scm]):
-            raise SkillYamlInvalidValueError(scm, skill_config_path)
+        if scm in skill_config.keys():
+            if not skill_config[scm] or not validators.url(skill_config[scm]):
+                raise SkillYamlInvalidValueError(scm, skill_config_path)
 
     @staticmethod
     def validate_name(skill_config, skill_config_path):
